@@ -9,7 +9,7 @@ from tensorflow.keras.layers import Input, LSTM, Dense, Bidirectional
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 from tensorflow.keras.optimizers import Adam
 
-from traffic_dataset import TrafficDataLoader
+from datasets.traffic_dataset import TrafficDataLoader
 from attention_layer import AttentionLayer
 
 def set_seeds(seed: int):
