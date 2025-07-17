@@ -1,3 +1,4 @@
+import argparse
 import os
 import pandas as pd
 import pickle
@@ -12,6 +13,35 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, LSTM, Dense, Bidirectional, Dropout,Layer,GRU, BatchNormalization,RNN,SimpleRNN
 from tensorflow.keras.optimizers import Adam,SGD
 from tensorflow.keras import initializers
+from attention_layer import AttentionLayer
+
+parser = argparse.ArgumentParser(description='Train the traffic prediction model',
+                                 formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+
+parser.add_argument('--lr', default=1e-3, type=float, dest='lr')
+parser.add_argument('--batch_size', default=128, type=int, dest='batch_size')
+parser.add_argument('--num_epoch', default=300, type=int, dest='num_epoch')
+parser.add_argument('--seed', default=42, type=int, dest='seed')
+
+parser.add_argument('--data_dir', default='./datasets', type=str, dest='data_dir')
+parser.add_argument('--ckpt_dir', default='./checkpoint', type=str, dest='ckpt_dir')
+parser.add_argument('--result_dir', default='./results', type=str, dest='result_dir')
+
+parser.add_argument('--model_type', default='dnn', type=str, dest='model_type')
+
+args = parser.parse_args()
+
+#parameters
+lr = args.lr
+batch_size = args.batch_size
+num_epoch = args.num_epoch
+seed_value = args.seed
+
+data_dir = args.data_dir
+ckpt_dir = args.ckpt_dir
+result_dir = args.result_dir
+
+model_type = args.model_type
 
 def set_seeds(seed: int = 42) -> None:
     random.seed(seed)
@@ -20,37 +50,14 @@ def set_seeds(seed: int = 42) -> None:
     os.environ['TF_DETERMINISTIC_OPS'] = '1'
     os.environ['PYTHONHASHSEED'] = str(seed)
 
-class AttentionLayer(Layer):
-    def __init__(self, **kwargs):
-        super(AttentionLayer, self).__init__(**kwargs)
+set_seeds(seed_value)
 
-    def build(self, input_shape):
-        self.W = self.add_weight(name='attention_W', shape=(input_shape[-1], input_shape[-1]), initializer='glorot_uniform', trainable=True)
-        self.b = self.add_weight(name='attention_b', shape=(input_shape[-1],), initializer='zeros', trainable=True)
-        self.v = self.add_weight(name='attention_v', shape=(input_shape[-1], 1), initializer='glorot_uniform', trainable=True)
-        super(AttentionLayer, self).build(input_shape)
+# Define paths for datasets and models
+if not os.path.exists(data_dir):
+    raise FileNotFoundError(f"Dataset path '{data_dir}' does not exist. Please check the path.")
 
-    def call(self, x):
-        e = K.tanh(K.dot(x, self.W) + self.b)
-        scores = K.dot(e, self.v)
-        scores = K.squeeze(scores, axis=-1)
-        alpha = K.softmax(scores, axis=1)
-        alpha = K.expand_dims(alpha, axis=-1)
-        context_vector = K.sum(x * alpha, axis=1)
-        return context_vector
-
-    def compute_output_shape(self, input_shape):
-        return (input_shape[0], input_shape[-1])
-
-
-set_seeds(42)
-datasets_path = './data/traffic_volume'
-if not os.path.exists(datasets_path):
-    raise FileNotFoundError(f"Dataset path '{datasets_path}' does not exist. Please check the path.")
-
-model_save_path = './models'
-if not os.path.exists(model_save_path):
-    os.makedirs(model_save_path)
+if not os.path.exists(ckpt_dir):
+    os.makedirs(ckpt_dir)
 
 
 device = '/gpu:0' if tf.config.list_physical_devices('GPU') else '/cpu:0'
@@ -70,20 +77,15 @@ def plot_loss_history(history, model_name):
     plt.grid(True)
     
     # Save the plot
-    plt.savefig(os.path.join(model_save_path, f'loss_curve_{model_name}.png'))
+    plt.savefig(os.path.join(result_dir, f'loss_curve_{model_name}.png'))
     print(f"Loss curve saved as 'loss_curve_{model_name}.png'")
     plt.show()
 
 
-data_loader = TrafficDataLoader(data_path=datasets_path)
+data_loader = TrafficDataLoader(data_path=data_dir)
 
 # train mode
 train_X, train_Y, val_X, val_Y = data_loader.train_X, data_loader.train_Y, data_loader.val_X, data_loader.val_Y
-
-
-# test mode
-test_X = data_loader.test_X
-test_Y = data_loader.test_Y
 
 def create_complex_model(input_shape=(24, 17), output_dim=16):
     input_layer = Input(shape=input_shape, name="Input_Tensor")
@@ -107,29 +109,59 @@ def create_simple_model(input_shape=(24, 17), output_dim=16):
     model = Model(inputs=input_layer, outputs=output_layer, name="Simple_Model")
     return model
 
+def create_dnn_model(input_shape=(24, 17), output_dim=16):
+    input_layer = Input(shape=input_shape, name="Input_Tensor")
 
-# --- 실험 선택 ---
+    x = Bidirectional(LSTM(1000, return_sequences=True, activation='tanh'))(input_layer)
+    x = Bidirectional(LSTM(500, return_sequences=True, activation='tanh'))(x)
+    x = Bidirectional(LSTM(100, activation='tanh'))(x)
 
-# complex model
-print("train complex model")
-model_a = create_complex_model()
-model_a.compile(optimizer=Adam(learning_rate=0.001), loss='mse')
-callbacks_a = [
-    EarlyStopping(monitor='val_loss', patience=50, verbose=1),
-    ModelCheckpoint(os.path.join(model_save_path, 'model_A_best.h5'), save_best_only=True, monitor='val_loss', mode='min')
-]
-history_a = model_a.fit(train_X, train_Y, validation_data=(val_X, val_Y), epochs=300, batch_size=128, callbacks=callbacks_a, shuffle=False)
-print("model A min val_loss:", min(history_a.history['val_loss']))
-plot_loss_history(history_a, "Complex_Model")
+    x = Dense(2048, activation='relu')(x)
+    x = Dense(1024, activation='relu')(x)
+    x = Dense(1024, activation='relu')(x)
+    x = Dense(512, activation='relu')(x)
+    x = Dense(512, activation='relu')(x)
+    x = Dense(256, activation='relu')(x)
+    x = Dense(256, activation='relu')(x)
+    x = Dense(128, activation='relu')(x)
+    x = Dense(64, activation='relu')(x)
 
-# simple model
-print("simple model")
-model_b = create_simple_model()
-model_b.compile(optimizer=Adam(learning_rate=0.001), loss='mse')
-callbacks_b = [
-    EarlyStopping(monitor='val_loss', patience=50, verbose=1),
-    ModelCheckpoint(os.path.join(model_save_path, 'model_A_best.h5'), save_best_only=True, monitor='val_loss', mode='min')
-]
-history_b = model_b.fit(train_X, train_Y, validation_data=(val_X, val_Y), epochs=300, batch_size=128, callbacks=callbacks_b, shuffle=False)
-print("model B min val_loss:", min(history_b.history['val_loss']))
-plot_loss_history(history_b, "Simple_Model")
+    output_layer = Dense(16)(x)
+
+    model = Model(inputs=input_layer, outputs=output_layer, name="DNN_Model")
+    return model
+
+
+if model_type == 'complex':
+    print("train complex model")
+    model_a = create_complex_model()
+    model_a.compile(optimizer=Adam(lr), loss='mse')
+    callbacks_a = [
+        EarlyStopping(monitor='val_loss', patience=50, verbose=1),
+        ModelCheckpoint(os.path.join(ckpt_dir, 'model_complex_best.h5'), save_best_only=True, monitor='val_loss', mode='min')
+    ]
+    history_a = model_a.fit(train_X, train_Y, validation_data=(val_X, val_Y), epochs=num_epoch, batch_size=batch_size, callbacks=callbacks_a, shuffle=False)
+    print("model A min val_loss:", min(history_a.history['val_loss']))
+    plot_loss_history(history_a, "Complex_Model")
+elif model_type == 'simple':
+    print("train simple model")
+    model_b = create_simple_model()
+    model_b.compile(optimizer=Adam(lr), loss='mse')
+    callbacks_b = [
+        EarlyStopping(monitor='val_loss', patience=50, verbose=1),
+        ModelCheckpoint(os.path.join(ckpt_dir, 'model_simple_best.h5'), save_best_only=True, monitor='val_loss', mode='min')
+    ]
+    history_b = model_b.fit(train_X, train_Y, validation_data=(val_X, val_Y), epochs=num_epoch, batch_size=batch_size, callbacks=callbacks_b, shuffle=False)
+    print("model B min val_loss:", min(history_b.history['val_loss']))
+    plot_loss_history(history_b, "Simple_Model")
+else:
+    print("train dnn model")
+    model_c = create_dnn_model()
+    model_c.compile(optimizer=Adam(lr), loss='mse')
+    callbacks_c = [
+        EarlyStopping(monitor='val_loss', patience=50, verbose=1),
+        ModelCheckpoint(os.path.join(ckpt_dir, 'model_dnn_best.h5'), save_best_only=True, monitor='val_loss', mode='min')
+    ]
+    history_c = model_c.fit(train_X, train_Y, validation_data=(val_X, val_Y), epochs=num_epoch, batch_size=batch_size, callbacks=callbacks_c, shuffle=False)
+    print("model C min val_loss:", min(history_c.history['val_loss']))
+    plot_loss_history(history_c, "DNN_Model")
