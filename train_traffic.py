@@ -109,7 +109,7 @@ def main():
     model.summary()
     model.compile(optimizer=Adam(learning_rate=args.lr), loss='mse')
 
-    run_name = f"{model.name}_lr{args.lr}"
+    run_name = f"{model.name}_lr{args.lr}_seed{args.seed}"
     checkpoint_path = os.path.join(args.ckpt_dir, f"{run_name}_best.keras")
     callbacks = [
         EarlyStopping(monitor='val_loss', patience=50, verbose=1),
