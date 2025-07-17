@@ -44,63 +44,92 @@ class AttentionLayer(Layer):
 
 
 set_seeds(42)
+datasets_path = './data/traffic_volume'
+if not os.path.exists(datasets_path):
+    raise FileNotFoundError(f"Dataset path '{datasets_path}' does not exist. Please check the path.")
+
+model_save_path = './models'
+if not os.path.exists(model_save_path):
+    os.makedirs(model_save_path)
+
+
 device = '/gpu:0' if tf.config.list_physical_devices('GPU') else '/cpu:0'
 print(f"Using device: {device}")
 
+def plot_loss_history(history, model_name):
+    plt.figure(figsize=(15, 6))
+    
+    # Plot the loss curves
+    plt.plot(history.history['loss'][3:], label='Training Loss')
+    plt.plot(history.history['val_loss'][3:], label='Validation Loss')
+    
+    plt.title(f'Loss Curve for {model_name}')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss (MSE)')
+    plt.legend()
+    plt.grid(True)
+    
+    # Save the plot
+    plt.savefig(os.path.join(model_save_path, f'loss_curve_{model_name}.png'))
+    print(f"Loss curve saved as 'loss_curve_{model_name}.png'")
+    plt.show()
 
-data_loader = TrafficDataLoader(data_path='./data/traffic_volume')
+
+data_loader = TrafficDataLoader(data_path=datasets_path)
 
 # train mode
-train_X = data_loader.train_X
-train_Y = data_loader.train_Y
+train_X, train_Y, val_X, val_Y = data_loader.train_X, data_loader.train_Y, data_loader.val_X, data_loader.val_Y
 
-val_X = data_loader.val_X
-val_Y = data_loader.val_Y
 
 # test mode
 test_X = data_loader.test_X
 test_Y = data_loader.test_Y
 
+def create_complex_model(input_shape=(24, 17), output_dim=16):
+    input_layer = Input(shape=input_shape, name="Input_Tensor")
+    x = Bidirectional(LSTM(512, return_sequences=True, activation='tanh'), name="Bi-LSTM_1")(input_layer)
+    x = Bidirectional(LSTM(256, return_sequences=True, activation='tanh'), name="Bi-LSTM_2")(x)
+    x = AttentionLayer(name="Temporal_Attention")(x)
+    x = Dense(2048, activation='relu')(x)
+    x = Dense(1024, activation='relu')(x)
+    x = Dense(512, activation='relu')(x)
+    x = Dense(128, activation='relu')(x)
+    output_layer = Dense(output_dim, name="Output_Layer")(x)
+    model = Model(inputs=input_layer, outputs=output_layer, name="Complex_Model")
+    return model
+
 def create_simple_model(input_shape=(24, 17), output_dim=16):
     input_layer = Input(shape=input_shape, name="Input_Tensor")
     x = Bidirectional(LSTM(512, return_sequences=True, activation='tanh'), name="Bi-LSTM_1")(input_layer)
     x = Bidirectional(LSTM(256, return_sequences=True, activation='tanh'), name="Bi-LSTM_2")(x)
-    
     context_vector = AttentionLayer(name="Temporal_Attention")(x)
-    
     output_layer = Dense(output_dim, name="Output_Layer")(context_vector)
-    
     model = Model(inputs=input_layer, outputs=output_layer, name="Simple_Model")
     return model
 
 
-model = create_simple_model()
-model.summary()
+# --- 실험 선택 ---
 
-# simple model training
+# complex model
+print("train complex model")
+model_a = create_complex_model()
+model_a.compile(optimizer=Adam(learning_rate=0.001), loss='mse')
+callbacks_a = [
+    EarlyStopping(monitor='val_loss', patience=50, verbose=1),
+    ModelCheckpoint(os.path.join(model_save_path, 'model_A_best.h5'), save_best_only=True, monitor='val_loss', mode='min')
+]
+history_a = model_a.fit(train_X, train_Y, validation_data=(val_X, val_Y), epochs=300, batch_size=128, callbacks=callbacks_a, shuffle=False)
+print("model A min val_loss:", min(history_a.history['val_loss']))
+plot_loss_history(history_a, "Complex_Model")
+
+# simple model
+print("simple model")
+model_b = create_simple_model()
 model_b.compile(optimizer=Adam(learning_rate=0.001), loss='mse')
 callbacks_b = [
     EarlyStopping(monitor='val_loss', patience=50, verbose=1),
-    ModelCheckpoint('model_B_best.h5', save_best_only=True, monitor='val_loss', mode='min')
+    ModelCheckpoint(os.path.join(model_save_path, 'model_A_best.h5'), save_best_only=True, monitor='val_loss', mode='min')
 ]
-
-history_b = model_b.fit(
-    train_X, train_Y,
-    validation_data=(val_X, val_Y),
-    epochs=300,
-    batch_size=128,
-    callbacks=callbacks_b,
-    shuffle=False
-)
-
-print(f"simple modelB min val_loss: {min(history_b.history['val_loss'])}")
-
-plt.figure(figsize=(12, 6))
-plt.plot(history_b.history['loss'], label='Train Loss', color='blue')
-plt.plot(history_b.history['val_loss'], label='Validation Loss', color='orange')
-plt.title('Model B Training and Validation Loss')
-plt.xlabel('Epochs')
-plt.ylabel('Loss')
-plt.legend()
-plt.grid()
-plt.show()
+history_b = model_b.fit(train_X, train_Y, validation_data=(val_X, val_Y), epochs=300, batch_size=128, callbacks=callbacks_b, shuffle=False)
+print("model B min val_loss:", min(history_b.history['val_loss']))
+plot_loss_history(history_b, "Simple_Model")
