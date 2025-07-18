@@ -9,7 +9,7 @@ from tensorflow.keras.layers import Dense, LeakyReLU
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 from tensorflow.keras.optimizers import Adam
 
-from datasets.speed_dataset import SpeedDataLoader
+from speed_dataset import SpeedDataLoaders
 
 def set_seeds(seed: int):
     random.seed(seed)

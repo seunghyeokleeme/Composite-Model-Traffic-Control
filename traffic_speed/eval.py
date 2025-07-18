@@ -7,7 +7,7 @@ from tensorflow.keras.models import load_model
 from sklearn.metrics import mean_squared_error
 import matplotlib.pyplot as plt
 
-from datasets.speed_dataset import SpeedDataLoader
+from speed_dataset import SpeedDataLoader
 
 def plot_overall_scatter(true_values, predictions, filename, result_dir):
     """

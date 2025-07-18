@@ -7,7 +7,7 @@ from tensorflow.keras.models import load_model
 import matplotlib.pyplot as plt
 
 from attention_layer import AttentionLayer
-from datasets.traffic_dataset import TrafficDataLoader
+from traffic_dataset import TrafficDataLoader
 
 def main(model_path, data_path, result_dir):
     print("Loading test data...")
