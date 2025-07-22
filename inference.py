@@ -1,3 +1,4 @@
+import argparse
 import os
 import pickle
 import numpy as np
@@ -253,12 +254,21 @@ if __name__ == '__main__':
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
     tf.get_logger().setLevel('ERROR')
 
+    parser = argparse.ArgumentParser(description='Optimize traffic signal timings using LSTM and DNN models.')
+    parser.add_argument('--lstm_weights', type=str, required=True, help='Path to the LSTM model weights file.')
+    parser.add_argument('--dnn_weights', type=str, required=True, help='Path to the DNN model weights file.')
+    parser.add_argument('--test_data', type=str, required=True, help='Path to the test data file (pickle format).')
+    parser.add_argument('--select_index', type=int, default=0, help='Index of the test sample to use for optimization.')
+    args = parser.parse_args()
+
     # 모델 가중치 경로 설정
-    LSTM_WEIGHTS_PATH = './traffic_volume/model/Deep_Attention_Model_lr1e-04_seed42.weights.h5'
-    DNN_WEIGHTS_PATH = './traffic_speed/model/sequential_lr0.0001_seed42.weights.h5'
+    LSTM_WEIGHTS_PATH = args.lstm_weights
+    DNN_WEIGHTS_PATH = args.dnn_weights
     
     # 테스트 데이터 경로 설정
-    TEST_DATA_PATH = './data/traffic_volume/test_X.pkl'
+    TEST_DATA_PATH = args.test_data
+
+    select_index = args.select_index
 
     # 모델 로드
     lstm_model = load_lstm_model(LSTM_WEIGHTS_PATH)
@@ -269,7 +279,7 @@ if __name__ == '__main__':
         test_X = pickle.load(f)
     
     # LSTM 입력 데이터 준비 (Batch 차원 추가)
-    sample_lstm_input = test_X[0:1] # (1, 24, 17) 형태
+    sample_lstm_input = test_X[select_index:select_index+1] # (1, 24, 17) 형태
     print(f"\n테스트용 LSTM 입력 데이터 형태: {sample_lstm_input.shape}")
 
     # 프레임워크 인스턴스 생성
