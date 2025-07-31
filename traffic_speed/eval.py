@@ -119,11 +119,11 @@ def main(model_path, data_path, result_dir):
     # 6-2. 출력 피처별 시계열 그래프 (기존 기능)
     for i in range(num_features):
         plt.figure(figsize=(15, 6))
-        plt.plot(test_Y_reshaped[:, i], label='실제 값 (True Value)', color='blue')
-        plt.plot(predictions_reshaped[:, i], label='예측 값 (Predicted Value)', color='red', linestyle='--')
-        plt.title(f'출력 피처 {i+1} 전체 시계열 비교: {run_name}')
+        plt.plot(test_Y_reshaped[:, i], label='True Value', color='blue')
+        plt.plot(predictions_reshaped[:, i], label='Predicted Value', color='red', linestyle='--')
+        plt.title(f'Output feature {i+1} Comparison of entire time series: {run_name}')
         plt.xlabel("Time Step")
-        plt.ylabel("Speed")
+        plt.ylabel("Speed (km/h)")
         plt.legend()
         plt.grid(True)
         plt.savefig(os.path.join(plot_dir, f'feature_{i+1}_overall_trend.png'))
@@ -138,17 +138,20 @@ def main(model_path, data_path, result_dir):
         if direction_code == -1: continue
         
         direction_df = results_df[results_df['direction'] == direction_code]
+
+        directions = ["Busan National University", "Busan City Hall", "World Cup", "Silli", "Allak", "Yeonsan Tunnel"]
         
         for i in range(num_features):
             true_vals = direction_df[f'true_{i+1}'].values
             pred_vals = direction_df[f'pred_{i+1}'].values
             
             plt.figure(figsize=(15, 6))
-            plt.plot(true_vals, label='실제 값 (True Value)', color='blue')
-            plt.plot(pred_vals, label='예측 값 (Predicted Value)', color='red', linestyle='--')
-            plt.title(f'[방면 {direction_code}] 피처 {i+1} 시계열 비교: {run_name}')
+            plt.plot(true_vals, label='True Value', color='blue')
+            plt.plot(pred_vals, label='Predicted Value', color='red', linestyle='--')
+            # plt.title(f'[방면 {direction_code}] 피처 {i+1} 시계열 비교: {run_name}')
+            plt.title(f'{directions[direction_code]}')
             plt.xlabel("Time Step (for this direction)")
-            plt.ylabel("Speed")
+            plt.ylabel("Speed (km/h)")
             plt.legend()
             plt.grid(True)
             plt.savefig(os.path.join(directional_plot_dir, f'direction_{direction_code}_feature_{i+1}_trend.png'))
@@ -158,7 +161,7 @@ def main(model_path, data_path, result_dir):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='훈련된 교통 예측 모델을 평가합니다.')
+    parser = argparse.ArgumentParser(description='훈련된 교통 속도 예측 모델을 평가합니다.')
     parser.add_argument('--model_path', required=True, type=str, help='훈련된 .keras 모델 파일의 경로.')
     parser.add_argument('--data_dir', default='./datasets', type=str, help='데이터셋 디렉토리.')
     parser.add_argument('--result_dir', default='./results', type=str, help='결과 저장 디렉토리.')
