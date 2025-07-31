@@ -50,16 +50,16 @@ class SpeedDataLoader:
         self.test_X = np.array(test_X_raw)
         self.test_Y = np.array(self.test_Y)
 
-        # delete weather data
-        self.train_X = np.concatenate((self.train_X[:, :16], self.train_X[:, 23:]), axis=1)
-        self.val_X = np.concatenate((self.val_X[:, :16], self.val_X[:, 23:]), axis=1)
-        self.test_X = np.concatenate((self.test_X[:, :16], self.test_X[:, 23:]), axis=1)
+        # delete weather data (v2 not used)
+        # self.train_X = np.concatenate((self.train_X[:, :16], self.train_X[:, 23:]), axis=1)
+        # self.val_X = np.concatenate((self.val_X[:, :16], self.val_X[:, 23:]), axis=1)
+        # self.test_X = np.concatenate((self.test_X[:, :16], self.test_X[:, 23:]), axis=1)
 
 # Ensure that the data is loaded correctly
 if __name__ == '__main__':
     # 1. Create an instance of the SpeedDataLoader
     print("Loading traffic data...")
-    loader = SpeedDataLoader()
+    loader = SpeedDataLoader(data_path='./data/traffic_speed/v2')
 
     # 2. Print the shapes of the loaded data
     print("\n--- Data Shapes ---")
