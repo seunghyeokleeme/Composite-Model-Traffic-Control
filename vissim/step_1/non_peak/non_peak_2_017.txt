@@ -1,0 +1,34 @@
+filename:/Composite-Model-Traffic-Control/vissim/step_1/non_peak/non_peak_2_017.txt ===
+--- vissim_1_no Average Speed Analysis (km/h) ---
+average a0_speed: 29.14
+average a1_speed: 33.09
+average a2_speed: 27.27
+average a3_speed: 35.59
+average a4_speed: 30.35
+average a5_speed: 21.71
+
+--- Traffic Volume Analysis (vph) ---
+Q0_vph: 57
+Q1_vph: 106
+Q2_vph: 145
+Q3_vph: 86
+Q4_vph: 27
+Q5_vph: 52
+Q6_vph: 123
+Q7_vph: 20
+Q8_vph: 82
+Q9_vph: 38
+Q10_vph: 6
+Q11_vph: 98
+Q12_vph: 19
+Q13_vph: 81
+Q14_vph: 81
+Q15_vph: 25
+
+--- Output Volume Summary (vph) ---
+Output0: 163
+Output1: 258
+Output2: 195
+Output3: 126
+Output4: 117
+Output5: 187
