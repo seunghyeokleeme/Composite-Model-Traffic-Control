@@ -38,7 +38,7 @@ def main(model_path, data_path, result_dir):
     print(f"Loading model from '{model_path}'...")
     best_model = load_model(model_path, custom_objects={'AttentionLayer': AttentionLayer})
     # best_model = load_model(model_path) # simple_lstm model
-    
+
     print("Evaluating model performance...")
     test_loss = best_model.evaluate(test_X, test_Y, verbose=0)
     print(f"\n📈 Final Test MSE: {test_loss:.4f}\n")
@@ -50,7 +50,7 @@ def main(model_path, data_path, result_dir):
     results_csv_path = os.path.join(result_dir, f'test_results_{run_name}.csv')
     num_features = test_Y.shape[1]
     results_df = pd.DataFrame(np.concatenate([test_Y, predictions], axis=1), 
-                              columns=[f'true_{i+1}' for i in range(num_features)] + [f'pred_{i+1}' for i in range(num_features)])
+                            columns=[f'true_{i+1}' for i in range(num_features)] + [f'pred_{i+1}' for i in range(num_features)])
     results_df.to_csv(results_csv_path, index=False)
     print(f"✅ Results saved to '{results_csv_path}'.")
 
@@ -60,15 +60,15 @@ def main(model_path, data_path, result_dir):
         set_publication_style()
         plt.figure(figsize=(15,6))
         if i == 0:
-          plt.plot(test_Y[:, i], label='Actual', color='blue')
-          plt.plot(predictions[:, i], label='Predicted', color='red', linestyle='--')
+            plt.plot(test_Y[:, i], label='Actual', color='blue')
+            plt.plot(predictions[:, i], label='Predicted', color='red', linestyle='--')
         else:
-          plt.plot(test_Y[:, i], color='blue')
-          plt.plot(predictions[:, i], color='red', linestyle='--')
+            plt.plot(test_Y[:, i], color='blue')
+            plt.plot(predictions[:, i], color='red', linestyle='--')
         plt.xlabel('Time Step')
         plt.ylabel('Traffic Volume (vph)')
         if i == 0:
-          plt.legend(loc='best')
+            plt.legend(loc='best')
         plt.grid(True, linestyle=':')
         plt.tight_layout()
         plt.savefig(os.path.join(plot_dir, f'appendix_direction_{i}_trend.eps'), format='eps', bbox_inches='tight')
@@ -82,5 +82,5 @@ if __name__ == '__main__':
     parser.add_argument('--data_dir', default='./datasets', type=str, help='Dataset directory.')
     parser.add_argument('--result_dir', default='./results', type=str, help='Results directory.')
     args = parser.parse_args()
-    
+
     main(args.model_path, args.data_dir, args.result_dir)

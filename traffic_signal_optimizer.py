@@ -14,21 +14,21 @@ from tqdm import trange, tqdm
 # drive.mount('/content/drive')
 
 def set_publication_style():
-  mat.rc('font', family='DejaVu Serif')
-  mat.rcParams['mathtext.fontset'] = 'dejavuserif'
-  mat.rcParams['font.size'] = 16
-  mat.rcParams['axes.labelsize'] = 16
-  mat.rcParams['xtick.labelsize'] = 14
-  mat.rcParams['ytick.labelsize'] = 14
-  mat.rcParams['legend.fontsize'] = 14
-  # mat.rcParams['axes.titlesize'] = 12
-  mat.rcParams['savefig.dpi'] = 1200       # Line Art DPI
-  mat.rcParams['figure.dpi'] = 1200        # DPI
-  mat.rcParams['lines.linewidth'] = 1.5
-  mat.rcParams['axes.grid'] = True
-  mat.rcParams['axes.unicode_minus'] = False
-  mat.rcParams['axes.xmargin'] = 0.1
-  mat.rcParams['axes.ymargin'] = 0.1
+    mat.rc('font', family='DejaVu Serif')
+    mat.rcParams['mathtext.fontset'] = 'dejavuserif'
+    mat.rcParams['font.size'] = 16
+    mat.rcParams['axes.labelsize'] = 16
+    mat.rcParams['xtick.labelsize'] = 14
+    mat.rcParams['ytick.labelsize'] = 14
+    mat.rcParams['legend.fontsize'] = 14
+    # mat.rcParams['axes.titlesize'] = 12
+    mat.rcParams['savefig.dpi'] = 1200       # Line Art DPI
+    mat.rcParams['figure.dpi'] = 1200        # DPI
+    mat.rcParams['lines.linewidth'] = 1.5
+    mat.rcParams['axes.grid'] = True
+    mat.rcParams['axes.unicode_minus'] = False
+    mat.rcParams['axes.xmargin'] = 0.1
+    mat.rcParams['axes.ymargin'] = 0.1
 
 class SignalOptimizer:
     """
@@ -151,11 +151,11 @@ def run_single_timestep_optimization(dnn_model, scaler, test_X, test_Y, day_offs
     original_signals = test_X.iloc[start_row, 17:23].values.astype(int)
     actual_speeds = test_Y.iloc[start_row : end_row].values.flatten()
     if closed_loop == 1:
-      # Use fixed example data for closed loop testing
-      base_features = np.array([179.05685, 222.49242, 310.61502, 192.78485, 128.89693, 94.2162, 274.18042, 57.862648, 201.37315, 130.39098, 20.33832,
+        # Use fixed example data for closed loop testing
+        base_features = np.array([179.05685, 222.49242, 310.61502, 192.78485, 128.89693, 94.2162, 274.18042, 57.862648, 201.37315, 130.39098, 20.33832,
                                 250.28032, 77.827484, 152.72862,  197.37221, 63.327084, 0], dtype=np.int64)
-      original_signals = np.array([24, 31, 20, 17, 17, 16], dtype=np.int64)
-      actual_speeds = np.array([21.18259117, 27.09952524, 19.49596127, 25.47332749,	28.10950259, 13.14489088], dtype=np.float64)
+        original_signals = np.array([24, 31, 20, 17, 17, 16], dtype=np.int64)
+        actual_speeds = np.array([21.18259117, 27.09952524, 19.49596127, 25.47332749,	28.10950259, 13.14489088], dtype=np.float64)
 
     print(f"base_features: {type(base_features)}, original_signals: {type(original_signals)}, actual_speeds: {type(actual_speeds)}")
     print(f"base_features: {base_features}, original_signals: {original_signals}, actual_speeds: {actual_speeds}")
