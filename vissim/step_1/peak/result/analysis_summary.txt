@@ -1,0 +1,24 @@
+--- final analysis results (Total 10 files) ---
+
+item: average a0_speed     | file count: 10   | mean:    18.56 | std dev (n-1):     0.36
+item: average a1_speed     | file count: 10   | mean:    17.32 | std dev (n-1):     1.86
+item: average a2_speed     | file count: 10   | mean:     8.28 | std dev (n-1):     0.15
+item: average a3_speed     | file count: 10   | mean:    25.27 | std dev (n-1):     0.66
+item: average a4_speed     | file count: 10   | mean:    11.89 | std dev (n-1):     0.27
+item: average a5_speed     | file count: 10   | mean:     5.37 | std dev (n-1):     0.48
+item: Q0_vph               | file count: 10   | mean:   323.40 | std dev (n-1):    24.97
+item: Q1_vph               | file count: 10   | mean:   504.20 | std dev (n-1):    20.57
+item: Q2_vph               | file count: 10   | mean:   631.90 | std dev (n-1):    34.70
+item: Q3_vph               | file count: 10   | mean:   412.90 | std dev (n-1):    10.26
+item: Q4_vph               | file count: 10   | mean:   336.90 | std dev (n-1):    17.88
+item: Q5_vph               | file count: 10   | mean:   202.70 | std dev (n-1):    14.51
+item: Q6_vph               | file count: 10   | mean:   653.10 | std dev (n-1):    15.26
+item: Q7_vph               | file count: 10   | mean:    60.60 | std dev (n-1):     5.74
+item: Q8_vph               | file count: 10   | mean:   516.20 | std dev (n-1):    27.63
+item: Q9_vph               | file count: 10   | mean:   356.70 | std dev (n-1):    17.51
+item: Q10_vph              | file count: 10   | mean:    25.40 | std dev (n-1):     3.63
+item: Q11_vph              | file count: 10   | mean:   606.10 | std dev (n-1):    32.94
+item: Q12_vph              | file count: 10   | mean:    84.90 | std dev (n-1):     6.54
+item: Q13_vph              | file count: 10   | mean:   296.20 | std dev (n-1):    13.64
+item: Q14_vph              | file count: 10   | mean:   361.80 | std dev (n-1):     9.17
+item: Q15_vph              | file count: 10   | mean:    19.40 | std dev (n-1):     4.70
