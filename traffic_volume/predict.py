@@ -23,7 +23,8 @@ def main(model_path, data_path):
     print(f"test_X: {test_X.ndim}")
     print(f"test_X: {test_X.dtype}")    
 
-    # For debugging with a single sample  
+    # Note: if you want to test only closed-loop for a single instance
+    # please uncomment the following lines and comment out the normal mode line
     # test_X_first = test_X[0]
     # test_X_first = test_X_first[np.newaxis]
 
@@ -61,7 +62,7 @@ def main(model_path, data_path):
     # print(f"test_X_first: {test_X_first.dtype}")
     # predictions = best_model.predict(test_X_first)
 
-    predictions = best_model.predict(test_X)
+    predictions = best_model.predict(test_X) # normal mode
     print(predictions)
 
 if __name__ == '__main__':
