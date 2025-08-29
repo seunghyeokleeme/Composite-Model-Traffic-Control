@@ -151,7 +151,10 @@ def run_single_timestep_optimization(dnn_model, scaler, test_X, test_Y, day_offs
     original_signals = test_X.iloc[start_row, 17:23].values.astype(int)
     actual_speeds = test_Y.iloc[start_row : end_row].values.flatten()
     if closed_loop == 1:
-        # Use fixed example data for closed loop testing
+        # Things to check
+        # Use the 16 traffic volume data predictions from traffic_volume/prediction.py you just ran for the closed-loop test.
+        # Then, set the actual current data and actual measured speed.
+        # The code below is example data.
         base_features = np.array([179.05685, 222.49242, 310.61502, 192.78485, 128.89693, 94.2162, 274.18042, 57.862648, 201.37315, 130.39098, 20.33832,
                                 250.28032, 77.827484, 152.72862,  197.37221, 63.327084, 0], dtype=np.int64)
         original_signals = np.array([24, 31, 20, 17, 17, 16], dtype=np.int64)
