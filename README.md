@@ -1,8 +1,21 @@
 <div align="center">
 <h1 align="center">🚦 Composite Model for Traffic Signal Control</h1>
 
-<h3>Optimal Traffic Signal Control for an Atypical Isolated Intersection Using Composite Analysis Model</h3>
-<br/>
+<h3>Optimal Traffic Signal Control for an Atypical Isolated Intersection
+Using Composite AI Model</h3>
+
+[Seunghyeok Lee](https://orcid.org/0009-0009-4709-7931)<sup>a</sup>, [Bumku Choi](https://orcid.org/0009-0004-1728-7420)<sup>b</sup>, [Weeyoung Kwon](https://orcid.org/0009-0004-4781-1385)<sup>c</sup>, [Jungeun Cha](https://orcid.org/0009-0000-0579-6405)<sup>d</sup>, [Jihyo Jung](https://orcid.org/0009-0008-3803-8625)<sup>d</sup>, [Hoe Kyoung Kim](https://orcid.org/0000-0001-5057-2558)<sup>e</sup> 
+
+<sup>a</sup> Department of Electronic Engineering, Dong-A University, Busan, Korea
+
+<sup>b</sup> Department of Forecast, Geosystem Research Corporation, Busan, Korea
+
+<sup>c</sup> Graduate School of Advanced Imaging Science, Multimedia, and Film (GSAIM), Chung-Ang University, Seoul, Korea
+
+<sup>d</sup> Department of Urban Planning and Landscape Architecture, Dong-A University, Busan, Korea
+
+<sup>e</sup> Department of Urban Planning and Engineering, Dong-A University, Busan, Korea
+
 </div>
 
 ## 📝 Project Overview
@@ -67,12 +80,18 @@ The expected directory structure is:
 │       ├── traffic_volume.csv
 │       └── traffic_volume_timestemp.csv
 ├── traffic_speed/
+│   ├── eval.py
+│   ├── make_data.py
+│   ├── train.py
+│   ├── speed_dataset.py
+│   └── predict.py
+├── traffic_volume/
+│   ├── make_data.py
+│   ├── eval.py
+│   ├── predict.py
 │   ├── train.py
 │   └── eval.py
-└── traffic_volume/
-    ├── make_data.py
-    ├── train.py
-    └── eval.py
+└── traffic_signal_optimizer.py
 ```
 
 ## 🚀 How to Run
