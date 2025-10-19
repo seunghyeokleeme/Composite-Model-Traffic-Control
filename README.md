@@ -22,6 +22,12 @@ Using Composite AI Model</h3>
 
 This project proposes and evaluates a novel AI-based composite framework for traffic signal control optimization, which integrates a Long Short-Term Memory (LSTM) model for traffic flow prediction, a Deep Neural Network (DNN) for vehicle speed estimation, and a Genetic Algorithm (GA) for signal phase optimization. It has been validated through high-fidelity microscopic simulations (i.e., VISSIM), calibrated with field data at the atypical six-leg intersection in Busan, Korea.
 
+![figure1](figures/Figure1.png)
+![figure2](figures/Figure2.png)
+![figure3a](figures/Figure3a.png)
+![figure3b](figures/Figure3b.png)
+![figure3c](figures/Figure3c.png)
+
 ## 🔑 Key Features
 
 ## 🧩 Requirements
@@ -125,6 +131,9 @@ python ./traffic_volume/train.py \
 ## Problem Formulation
 
 ## 📈 Results
+
+![figure6](figures/Figure6.png)
+
 
 ### Traffic Volume Prediction Results
 
